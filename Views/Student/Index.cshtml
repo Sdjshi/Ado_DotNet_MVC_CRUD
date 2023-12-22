@@ -1,0 +1,253 @@
+﻿@model IEnumerable<Student_Jquery.Models.Student>
+
+@{
+    ViewData["Title"] = "Styudent Index";
+}
+<script src="~/js/jquery-3.7.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+                    $("#dvshow").click(function(){
+                       
+                        $("#dvCreate").show();
+                        //$("#dvhide").show();
+                        $("#dvshow").hide();
+                    });
+
+                    $("#dvhide").click(function (){
+                        $("#dvCreate").hide();
+                       // $("#dvhide").hide();
+                        $("#dvshow").show();
+                    });
+
+    
+    
+    
+    
+    });
+    
+
+    function fnSaveData()
+    {
+        //debugger;
+        //let FirstName = $("#txtFirstName").val();
+            
+      =
+        $.ajax({
+            type: "POST",
+            url: '/Student/CreateOrEdit',
+            //contentType: 'application/json; charset=UTF-8',
+            data: {
+                'FirstName' : $("#txtFirstName").val(),
+                'LastName': $("#txtLastName").val(),
+                'Email': $("#txtEmail").val(),
+                'Mobile': $("#txtMobile").val(),
+                'Address': $("#txtAddress").val(),
+                'Id': $("#hdbId").val()
+                
+
+            },
+            success:function(response){
+                $("#dvCreate").hide();
+                $("#dvshow").hide();
+                location.reload(true);
+
+
+            },
+            error: function (req, status, error) { }
+
+        });
+        
+
+    }
+
+    function fnEdit(id){
+        
+       
+   
+        $.ajax({
+            type: "POST",
+            url: '/Student/GetDetailsById',
+            
+            data: {
+                'id':id
+               
+            },
+            success: function (response) {
+                $("#dvCreate").show();
+                $("#dvshow").hide();
+                $("#txtFirstName").val(response.firstName);
+                $("#txtLastName").val(response.lastName);
+                $("#txtEmail").val(response.email);
+                $("#txtMobile").val(response.mobile);
+                $("#txtAddress").val(response.address);
+                $("#hdbId").val(response.id);
+
+            },
+            error: function (req, status, error) { }
+
+        });
+        
+    }
+
+    function fnDelete(id) {
+
+        console.log('Deleting item with Id:', id)
+
+        $.ajax({
+            type: "POST", 
+            url: '/Student/DeleteStu',
+            //contentType: 'application/json; charset=utf-8',
+            
+            data: {
+                'Id': id 
+                
+
+            },
+            success: function (response) {
+                //$("#dvCreate").show();
+                //$("#dvshow").hide();
+                location.reload(true);
+
+            },
+            error: function (req, status, error) { }
+
+        });
+
+    }
+
+
+
+ </script>
+<input type="hidden" id="hdbId" value="0"/>
+
+<h1>Student Index</h1>
+<a href="javascript:void(0)" id="dvshow" class="btn btn-primary">Add Student</a>
+
+
+
+<div id="dvCreate" style="display:none">
+    <div class="container">
+        <input type ="hidden" id="hdnId"/>
+        <div class="row mb-3">
+            <div class="col-md-3">FirstName</div>
+            <div class="col-md-9">
+                <input type="text" id="txtFirstName" class="form-control" />
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-3">LastName</div>
+            <div class="col-md-9">
+                <input type="text" id="txtLastName" class="form-control" />
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-3">Email</div>
+            <div class="col-md-9">
+                <input type="text" id="txtEmail" class="form-control" />
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-3">Mobile</div>
+            <div class="col-md-9">
+                <input type="text" id="txtMobile" class="form-control" />
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-3">Address</div>
+            <div class="col-md-9">
+                <input type="text" id="txtAddress" class="form-control" />
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-3"></div>
+            <div class="col-md-9">
+                <input type="submit" value="Save" onclick="fnSaveData()" class="btn btn-primary" />
+                <a href="javascript:void(0)" id="dvhide" class="btn btn-danger">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mobile)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Mobile)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                    <a href="javascript:void(0)" class="btn btn-secondary" onclick="return fnEdit('@item.Id')">Edit</a>
+
+
+                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#sdj_@item.Id">
+                        Details
+                    </button>
+                    <div class="modal fade" id="sdj_@item.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">@item.FirstName</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    ID: @item.Id<br>
+                                    FirstName: @item.FirstName<br>
+                                    LastName: @item.LastName<br>
+                                    Email: @item.Email<br>
+                                    Mobile: @item.Mobile<br>
+                                    Address: @item.Address<br>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="javascript:void(0)" class="btn btn-danger" onclick="return fnDelete('@item.Id')">Delete</a>
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+
